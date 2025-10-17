@@ -3,7 +3,7 @@ let BookModel = require('../models/books');
 module.exports.getBook = async function (req, res, next) {
   try {
     // Find one using the id sent in the parameter of the request
-    let book = await BookModel.findOne({ _id: req.params.bookId });
+    let book = await BookModel.findOne({ id: req.params._id });
 
     res.json(book);
 
@@ -11,6 +11,28 @@ module.exports.getBook = async function (req, res, next) {
     console.log(error);
     next(error);
   }
+}
+
+module.exports.userByID = async function (req, res, next) {
+    try {
+
+        let user = await UserModel.findOne({ _id: req.params.id });
+
+        if (!user){
+             res.status(404).json(
+              { 
+                message: "User not found" 
+              }
+            );
+        }
+        else
+        {
+          res.json(user);
+        }
+    } catch (error) {
+        console.log(error);
+        next(error);
+    }
 }
 
 module.exports.create = async function (req, res, next) {
@@ -56,10 +78,10 @@ module.exports.update = async function (req, res, next) {
   try {
     // Get input from the request
     let updatedBook = BookModel(req.body);
-    updatedBook._id = req.params.bookId;
+    updatedBook._id = req.params.id;
 
     // Submit the change
-    let result = await BookModel.updateOne({ _id: req.params.bookId });
+    let result = await BookModel.updateOne({ _id: req.params.id }, updatedBook);
     console.log("Result: ", result);
 
     // Handle the result: send a response.
